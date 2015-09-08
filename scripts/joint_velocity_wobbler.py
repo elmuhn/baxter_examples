@@ -32,6 +32,7 @@ import math
 import random
 
 import rospy
+import signal
 
 from std_msgs.msg import (
     UInt16,
@@ -54,6 +55,9 @@ class Wobbler(object):
         self._right_arm = baxter_interface.limb.Limb("right")
         self._left_joint_names = self._left_arm.joint_names()
         self._right_joint_names = self._right_arm.joint_names()
+
+        # attribue to halt wobbling execution
+        self._execution_halted = False
 
         # control parameters
         self._rate = 500.0  # Hz
@@ -86,7 +90,8 @@ class Wobbler(object):
         self._left_arm.move_to_neutral()
         self._right_arm.move_to_neutral()
 
-    def clean_shutdown(self):
+    def clean_shutdown(self, sig, frame):
+        self._execution_halted = True
         print("\nExiting example...")
         #return to normal
         self._reset_control_modes()
@@ -124,7 +129,7 @@ class Wobbler(object):
                          for i, joint in enumerate(joint_names)])
 
         print("Wobbling. Press Ctrl-C to stop...")
-        while not rospy.is_shutdown():
+        while not rospy.is_shutdown() and not self._execution_halted:
             self._pub_rate.publish(self._rate)
             elapsed = rospy.Time.now() - start
             cmd = make_cmd(self._left_joint_names, elapsed)
@@ -132,6 +137,8 @@ class Wobbler(object):
             cmd = make_cmd(self._right_joint_names, elapsed)
             self._right_arm.set_joint_velocities(cmd)
             rate.sleep()
+        if not rospy.is_shutdown():
+            rospy.signal_shutdown("ROS shutdown requested in Wobbler")
 
 
 def main():
@@ -146,10 +153,11 @@ def main():
     parser.parse_args(rospy.myargv()[1:])
 
     print("Initializing node... ")
-    rospy.init_node("rsdk_joint_velocity_wobbler")
+    rospy.init_node("rsdk_joint_velocity_wobbler", disable_signals=True)
 
     wobbler = Wobbler()
-    rospy.on_shutdown(wobbler.clean_shutdown)
+    signal.signal(signal.SIGINT, wobbler.clean_shutdown)
+    signal.signal(signal.SIGTERM, wobbler.clean_shutdown)
     wobbler.wobble()
 
     print("Done.")
