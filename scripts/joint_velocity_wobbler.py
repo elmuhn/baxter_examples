@@ -40,6 +40,7 @@ from std_msgs.msg import (
 import baxter_interface
 
 from baxter_interface import CHECK_VERSION
+from bondpy import bondpy
 
 
 class Wobbler(object):
