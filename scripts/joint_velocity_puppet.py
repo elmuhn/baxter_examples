@@ -39,6 +39,7 @@ from std_msgs.msg import (
 import baxter_interface
 
 from baxter_interface import CHECK_VERSION
+from bondpy import bondpy
 
 
 class Puppeteer(object):
@@ -150,6 +151,9 @@ def main():
 
     print("Initializing node... ")
     rospy.init_node("rsdk_joint_velocity_puppet")
+
+    bond = bondpy.Bond('demo_puppet', 'demo_puppet')
+    bond.start()
 
     puppeteer = Puppeteer(args.limb, args.amplification)
     rospy.on_shutdown(puppeteer.clean_shutdown)

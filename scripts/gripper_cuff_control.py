@@ -38,6 +38,7 @@ from baxter_interface import (
     Navigator,
     CHECK_VERSION,
 )
+from bondpy import bondpy
 
 
 class GripperConnect(object):
@@ -148,6 +149,9 @@ def main():
 
     rospy.init_node('rsdk_gripper_cuff_control_%s' % (args.gripper,),
                     log_level=args.verbosity)
+
+    bond = bondpy.Bond('demo_cuff', 'demo_cuff')
+    bond.start()
 
     arms = (args.gripper,) if args.gripper != 'both' else ('left', 'right')
     grip_ctrls = [GripperConnect(arm, args.lights) for arm in arms]

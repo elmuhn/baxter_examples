@@ -38,6 +38,7 @@ import baxter_interface
 import baxter_external_devices
 
 from baxter_interface import CHECK_VERSION
+from bondpy import bondpy
 
 
 def rotate(l):
@@ -205,6 +206,10 @@ key bindings.
 
     print("Initializing node... ")
     rospy.init_node("rsdk_joint_position_joystick")
+
+    bond = bondpy.Bond("demo_joystick", "demo_joystick")
+    bond.start()
+
     print("Getting robot state... ")
     rs = baxter_interface.RobotEnable(CHECK_VERSION)
     init_state = rs.state().enabled

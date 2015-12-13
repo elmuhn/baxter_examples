@@ -38,6 +38,7 @@ import baxter_interface
 import baxter_external_devices
 
 from baxter_interface import CHECK_VERSION
+from bondpy import bondpy
 
 
 def map_keyboard():
@@ -135,6 +136,10 @@ See help inside the example with the '?' key for key bindings.
 
     print("Initializing node... ")
     rospy.init_node("rsdk_joint_position_keyboard")
+
+    bond = bondpy.Bond('demo_jp_kb', 'demo_jp_kb')
+    bond.start()
+
     print("Getting robot state... ")
     rs = baxter_interface.RobotEnable(CHECK_VERSION)
     init_state = rs.state().enabled

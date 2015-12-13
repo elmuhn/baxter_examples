@@ -35,6 +35,7 @@ import rospy
 import baxter_interface
 
 from baxter_interface import CHECK_VERSION
+from bondpy import bondpy
 
 
 class Wobbler(object):
@@ -107,6 +108,9 @@ def main():
 
     print("Initializing node... ")
     rospy.init_node("rsdk_head_wobbler")
+
+    bond = bondpy.Bond('demo_hwobbler', 'demo_hwobbler')
+    bond.start()
 
     wobbler = Wobbler()
     rospy.on_shutdown(wobbler.clean_shutdown)

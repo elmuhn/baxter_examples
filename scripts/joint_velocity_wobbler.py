@@ -149,6 +149,9 @@ def main():
     print("Initializing node... ")
     rospy.init_node("rsdk_joint_velocity_wobbler")
 
+    bond = bondpy.Bond('demo_wobbler', 'demo_wobbler')
+    bond.start()
+
     wobbler = Wobbler()
     rospy.on_shutdown(wobbler.clean_shutdown)
     wobbler.wobble()
